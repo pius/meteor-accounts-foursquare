@@ -20,6 +20,5 @@
           '&state=' + state;
 		
     Accounts.oauth.initiateLogin(state, loginUrl, callback, {width: 900, height: 450});
-
 	};
 }) ();

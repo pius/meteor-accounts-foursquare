@@ -1,7 +1,19 @@
 (function () {
-  Meteor.accounts.foursquare.setSecret = function (secret) {
-    Meteor.accounts.foursquare._secret = secret;
+  Accounts.foursquare.setSecret = function (secret) {
+    Accounts.foursquare._secret = secret;
   };
+
+  function xinspect(o,i){
+    if(typeof i=='undefined')i='';
+    if(i.length>50)return '[MAX ITERATIONS]';
+    var r=[];
+    for(var p in o){
+        var t=typeof o[p];
+        r.push(i+'"'+p+'" ('+t+') => '+(t=='object' ? 'object:'+xinspect(o[p],i+'  ') : o[p]+''));
+    }
+    return r.join(i+'\n');
+}
+
 
   Accounts.oauth.registerService('foursquare', 2, function(query) {
 
@@ -27,29 +39,37 @@
 	  var config = Accounts.loginServiceConfiguration.findOne({service: 'foursquare'});
 	  if (!config)
 		  throw new Accounts.ConfigError("Service not configured");
-	  
 	  var result = Meteor.http.post(
-			  "https://foursquare.com/oauth/access_token", {headers: {Accept: 'application/json'}, params: {
-				  code: query.code,
+			  "https://foursquare.com/oauth2/access_token", {headers: {Accept: 'application/json'}, params: {
 				  client_id: config.clientId,
 				  client_secret: config.secret,
+          grant_type: "authorization_code",
 				  redirect_uri: Meteor.absoluteUrl("_oauth/foursquare?close"),
+				  code: query.code,
 				  state: query.state
-			  }});
-	  if (result.error) // if the http response was an error
-		  throw result.error;
-	  if (result.data.error) // if the http response was a json object with an error attribute
-	      throw result.data;
+
+    }});
+		if (result.error) 
+      {
+			throw result.error;
+      }
+		if (result.data.error)
+      {
+				throw result.data;
+      }
 	  return result.data.access_token;
+
   };
 
   var getIdentity = function (accessToken) {
     var result = Meteor.http.get(
       "https://api.foursquare.com/v2/users/self",
-      {params: {access_token: accessToken}});
+      {params: {oauth_token: accessToken}});
+
 
     if (result.error)
       throw result.error;
-    return result.data;
+    return result.data.response.user;
+
   };
 }) ();
