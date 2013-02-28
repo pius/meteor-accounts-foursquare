@@ -15,5 +15,5 @@ Foursquare OAuth2 login service for use with Meteor Auth
 
 ### Credits
 
-* Shamelessly based upon
+* Shamelessly based on
 [@Jabbslad](https://github.com/Jabbslad)'s Github OAuth2 login service
