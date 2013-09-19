@@ -4,8 +4,9 @@ Foursquare OAuth2 login service for use with Meteor Auth
 
 ### Package Dependencies
 
-* accounts
-* accounts-oauth2-helper
+* accounts-base
+* accounts-oauth
+* foursquare
 
 ### Usage
 
